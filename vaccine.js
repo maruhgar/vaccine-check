@@ -21,27 +21,30 @@ https
 const parseData = (rawData) => {
   const data = JSON.parse(rawData);
   const covishield45 = data.sessions.filter(
-    (item) => item.vaccine === "COVISHIELD" && item.min_age_limit === 45
+    (item) => item.vaccine === "COVISHIELD" && item.min_age_limit === 45 && item.available_capacity_dose2 > 0
   );
   let output = "No | Name | Address | PINCODE | Capacity (Dose 2\n"
 
-  // console.log("No | Name | Address | PINCODE | Capacity (Dose 2");
   covishield45.forEach((item, index) => {
-    // console.log(
-    //   `${index + 1} ${item.name} | ${item.address} | ${item.pincode} | ${
-    //     item.available_capacity_dose2}`
-    // )
     output +=  `${index + 1} ${item.name} | ${item.address} | ${item.pincode} | ${
         item.available_capacity_dose2}\n`
   });
-  sendMail(output)
+  if (covishield45.length > 0) {
+    sendMail(output)
+  } else {
+    const presentTime = new Date().toString()
+    console.log("NO slots for 45+ dose 2 at " + presentTime)
+  }
 };
 
-const sendMail = (data) => {
-  const transporter = tranodemailer.createTransport({
+const sendMail = async (data) => {
+  const transporter = nodemailer.createTransport({
     pool: true,
     host: "localhost",
-    port: 25
+    port: 25,
+    tls: {
+      rejectUnauthorized: false
+    }
   });
 
   var mailOptions = {
@@ -51,11 +54,7 @@ const sendMail = (data) => {
     text: data
   };
 
-  transporter.sendMail(mailOptions, function(err, data) {
-    if (err) {
-      console.log("Error " + err);
-    } else {
-      console.log(data);
-    }
-  });
+  const result = await transporter.sendMail(mailOptions) 
+  process.exit(0)
 }
+
