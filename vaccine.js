@@ -56,7 +56,7 @@ const parseData = (rawData) => {
       htmlOutput += `<td>${item.available_capacity_dose1}</td></tr>`;
     }
   });
-  htmlOutput += `</tbody></table></body></html`;
+  htmlOutput += `</tbody></table></body></html>`;
 
   if (vaccineSlots.length > 0) {
     if (shouldSendMail) {
