@@ -67,7 +67,7 @@ const parseData = (rawData) => {
   } else {
     const presentTime = new Date().toString();
     console.log(
-      `At ${presentTime} there is NO ${vaccineType} slot for ${minAgeLimit}+ for dose ${dosageType}`
+      `At ${presentTime} there is NO ${vaccineType} slot for ${minAgeLimit}+ for dose ${dosageType} on ${vaccineDate}`
     );
   }
 };
