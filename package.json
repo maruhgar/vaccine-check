@@ -1,7 +1,7 @@
 {
-  "name": "vaccine",
+  "name": "vaccine-check",
   "version": "1.0.0",
-  "description": "",
+  "description": "A script to check vaccine availability in India",
   "main": "vaccine.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
