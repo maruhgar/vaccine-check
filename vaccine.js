@@ -51,16 +51,16 @@ const parseData = (rawData) => {
 const sendMail = async (data) => {
   const transporter = nodemailer.createTransport({
     pool: true,
-    host: "localhost",
-    port: 25,
+    host: process.env.HOST,
+    port: process.env.HOST,
     tls: {
       rejectUnauthorized: false
     }
   });
 
-  var mailOptions = {
-    from: 'raghu@www.innoventestech.in',
-    to: 'raghu@innoventes.co',
+  const mailOptions = {
+    from: process.env.FROM,
+    to: process.env.TO,
     subject: 'Covid Vaccine availability Info',
     text: data
   };
