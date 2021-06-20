@@ -61,7 +61,7 @@ const parseWeekData = (rawData) => {
       session.vaccine === vaccineType &&
       session.min_age_limit >= +minAgeLimit &&
         (2 === +dosageType
-          ? session.available_capacity_dose2 >= 0
+          ? session.available_capacity_dose2 > 0
           : session.available_capacity_dose1 > 0)
     );
     vaccineSlots.forEach((session) => {
