@@ -77,7 +77,7 @@ const sendMail = async (textOutput, htmlOutput) => {
   const transporter = nodemailer.createTransport({
     pool: true,
     host: process.env.HOST,
-    port: process.env.HOST,
+    port: process.env.PORT,
     tls: {
       rejectUnauthorized: false,
     },
