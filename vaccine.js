@@ -1,9 +1,16 @@
 const https = require("https");
 const nodemailer = require("nodemailer");
+const dotenv = require("dotenv");
+
+dotenv.config();
+const apiUrl = process.env.API_URL
+const districtId = process.env.DISTRICT_ID
+const vaccineDate = process.env.VACCINE_DATE
+const shouldSendMail = (process.env.SENDMAIL === 'true')
 
 https
   .get(
-    "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?district_id=307&date=25-06-2021",
+    `${apiUrl}?district_id=${districtId}&date=${vaccineDate}`,
     (resp) => {
       let data = "";
       resp.on("data", (chunk) => {
@@ -30,7 +37,11 @@ const parseData = (rawData) => {
         item.available_capacity_dose2}\n`
   });
   if (covishield45.length > 0) {
-    sendMail(output)
+    if (shouldSendMail) {
+      sendMail(output)
+    } else {
+      console.log(output)
+    }
   } else {
     const presentTime = new Date().toString()
     console.log("NO slots for 45+ dose 2 at " + presentTime)
@@ -40,21 +51,21 @@ const parseData = (rawData) => {
 const sendMail = async (data) => {
   const transporter = nodemailer.createTransport({
     pool: true,
-    host: "localhost",
-    port: 25,
+    host: process.env.HOST,
+    port: process.env.HOST,
     tls: {
       rejectUnauthorized: false
     }
   });
 
-  var mailOptions = {
-    from: 'raghu@www.innoventestech.in',
-    to: 'raghu@innoventes.co',
+  const mailOptions = {
+    from: process.env.FROM,
+    to: process.env.TO,
     subject: 'Covid Vaccine availability Info',
     text: data
   };
 
-  const result = await transporter.sendMail(mailOptions) 
+  await transporter.sendMail(mailOptions)
   process.exit(0)
 }
 
