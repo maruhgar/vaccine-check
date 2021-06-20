@@ -90,7 +90,7 @@ const parseWeekData = (rawData) => {
   } else {
     const presentTime = new Date().toString();
     console.log(
-      `At ${presentTime} there is NO ${vaccineType} slot for ${minAgeLimit}+ for dose ${dosageType} on ${vaccineDate}`
+      `At ${presentTime} there is NO ${vaccineType} slot for ${minAgeLimit}+ for dose ${dosageType} for the week starting ${vaccineDate}`
     );
   }
 }
