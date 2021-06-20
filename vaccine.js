@@ -4,6 +4,9 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 const apiUrl = process.env.API_URL;
+const dayEndpoint = process.env.DAY_END_POINT;
+const weekEndpoint = process.env.WEEK_END_POINT;
+const duration = process.env.DURATION;
 const districtId = process.env.DISTRICT_ID;
 const vaccineDate = process.env.VACCINE_DATE;
 const vaccineType = process.env.VACCINE_TYPE;
@@ -12,23 +15,89 @@ const dosageType = process.env.DOSAGE_TYPE;
 
 const shouldSendMail = process.env.SENDMAIL === "true";
 
-// Fetch the data from server
-https
-  .get(`${apiUrl}?district_id=${districtId}&date=${vaccineDate}`, (resp) => {
+const checkByDay = () => {
+  https
+  .get(`${apiUrl}/${dayEndpoint}?district_id=${districtId}&date=${vaccineDate}`, (resp) => {
     let data = "";
     resp.on("data", (chunk) => {
       data += chunk;
     });
     resp.on("end", () => {
-      parseData(data);
+      parseDayData(data);
     });
   })
   .on("error", (err) => {
     console.log("Error: " + err.message);
   });
+}
+
+const checkByWeek = () => {
+  https
+  .get(`${apiUrl}/${weekEndpoint}?district_id=${districtId}&date=${vaccineDate}`, (resp) => {
+    let data = "";
+    resp.on("data", (chunk) => {
+      data += chunk;
+    });
+    resp.on("end", () => {
+      parseWeekData(data);
+    });
+  })
+  .on("error", (err) => {
+    console.log("Error: " + err.message);
+  });
+}
+
+let output = "No | Name | Address | PINCODE | Avaialbility\n";
+let htmlOutput = ` <html><body><table><thead><tr>
+  <th>No</th><th>Name</th><th>Address</th><th>Pin Code</th><th>Available</th>
+  </tr></thead><tbody>`;
+let atleastOne = false;
+
+const parseWeekData = (rawData) => {
+  const data = JSON.parse(rawData);
+  data.centers.forEach((item, index) => {
+    const vaccineSlots = item.sessions.filter(
+      (session) =>
+      session.vaccine === vaccineType &&
+      session.min_age_limit >= +minAgeLimit &&
+        (2 === +dosageType
+          ? session.available_capacity_dose2 >= 0
+          : session.available_capacity_dose1 > 0)
+    );
+    vaccineSlots.forEach((session) => {
+      atleastOne = true;
+      output += `${index + 1} ${item.name} | ${item.address} | \
+      ${item.pincode} | ${session.date} `;
+      htmlOutput += `<tr><td>${index + 1}</td><td>${item.name}</td>
+      <td>${item.address}</td><td>${item.pincode}<td><td>${session.date}`;
+      if (2 === +dosageType) {
+        output += `${session.available_capacity_dose2}\n`;
+        htmlOutput += `<td>${session.available_capacity_dose2}</td></tr>`;
+      } else {
+        output += `${session.available_capacity_dose1}\n`;
+        htmlOutput += `<td>${session.available_capacity_dose1}</td></tr>`;
+      }
+    })
+  })
+  htmlOutput += `</tbody></table></body></html>`;
+
+  if (atleastOne) {
+    if (shouldSendMail) {
+      sendMail(output, htmlOutput);
+    } else {
+      console.log(output);
+    }
+  } else {
+    const presentTime = new Date().toString();
+    console.log(
+      `At ${presentTime} there is NO ${vaccineType} slot for ${minAgeLimit}+ for dose ${dosageType} on ${vaccineDate}`
+    );
+  }
+}
 
 // Filter the data based on required criteria
-const parseData = (rawData) => {
+const parseDayData = (rawData) => {
+
   const data = JSON.parse(rawData);
   const vaccineSlots = data.sessions.filter(
     (item) =>
@@ -44,7 +113,7 @@ const parseData = (rawData) => {
     </tr></thead><tbody>`;
 
   vaccineSlots.forEach((item, index) => {
-    output += `${index + 1} ${item.name} | ${item.address} |
+    output += `${index + 1} ${item.name} | ${item.address} | \
       ${item.pincode} | `;
     htmlOutput += `<tr><td>${index + 1}</td><td>${item.name}</td>
     <td>${item.address}</td><td>${item.pincode}<td>`;
@@ -94,3 +163,10 @@ const sendMail = async (textOutput, htmlOutput) => {
   await transporter.sendMail(mailOptions);
   process.exit(0);
 };
+
+
+if (duration === 'week') {
+  checkByWeek();
+} else {
+  checkByDay();
+}
