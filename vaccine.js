@@ -55,7 +55,7 @@ let htmlOutput = ` <html>
     border-collapse: collapse;
    }
    </style></head>
-  <body><table><thead><tr> 
+  <body><table><thead><tr>
   <th>No</th><th>Name</th><th>Address</th><th>Pin Code</th><th>Date</th><th>Dose 1</th><tH>Dose 2</th>
   </tr></thead><tbody>`;
 let atleastOne = false;
@@ -78,7 +78,7 @@ const parseWeekData = (rawData) => {
       htmlOutput += `<tr><td>${index + 1}</td><td>${item.name}</td>
       <td>${item.address}</td><td>${item.pincode}</td><td>${session.date}</td>`;
         output += `${session.available_capacity_dose1} | ${session.available_capacity_dose2}\n`;
-        htmlOutput += `<td>${session.available_capacity_dose1}</td><td><td>${session.available_capacity_dose2}</td></tr>`;
+        htmlOutput += `<td>${session.available_capacity_dose1}</td><td>${session.available_capacity_dose2}</td></tr>`;
     })
   })
   htmlOutput += `</tbody></table></body></html>`;
