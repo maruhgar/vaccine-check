@@ -15,6 +15,15 @@ const dosageType = process.env.DOSAGE_TYPE;
 
 const shouldSendMail = process.env.SENDMAIL === "true";
 
+let htmlOutput = ` <html>
+  <head><style>
+  table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+   }
+   </style></head>
+  <body><table><thead>`;
+
 const checkByDay = () => {
   https
   .get(`${apiUrl}/${dayEndpoint}?district_id=${districtId}&date=${vaccineDate}`, (resp) => {
@@ -48,15 +57,9 @@ const checkByWeek = () => {
 }
 
 let output = "No | Name | Address | PINCODE | Avaialbility\n";
-let htmlOutput = ` <html>
-  <head><style>
-  table, th, td {
-    border: 1px solid black;
-    border-collapse: collapse;
-   }
-   </style></head>
-  <body><table><thead><tr>
-  <th>No</th><th>Name</th><th>Address</th><th>Pin Code</th><th>Date</th><th>Dose 1</th><tH>Dose 2</th>
+htmlOutput += `
+  <tr><th>No</th><th>Name</th><th>Address</th><th>Pin Code</th><th>Date</th>
+  <th>Dose 1</th><tH>Dose 2</th>
   </tr></thead><tbody>`;
 let atleastOne = false;
 
@@ -110,8 +113,8 @@ const parseDayData = (rawData) => {
         : item.available_capacity_dose1 > 0)
   );
   let output = "No | Name | Address | PINCODE | Fee |  Dose 1 | Dose 2\n";
-  let htmlOutput = ` <html><body><table><thead><tr>
-    <th>No</th><th>Name</th><th>Address</th><th>Pin Code</th><th>Fees</th><th>Dose 1</th><td>Dose 2</th>
+  htmlOutput += `
+    <tr><th>No</th><th>Name</th><th>Address</th><th>Pin Code</th><th>Fees</th><th>Dose 1</th><td>Dose 2</th>
     </tr></thead><tbody>`;
 
   vaccineSlots.forEach((item, index) => {
@@ -130,7 +133,7 @@ const parseDayData = (rawData) => {
     if (shouldSendMail) {
       sendMail(output, htmlOutput);
     } else {
-      console.log(output);
+      console.log(htmlOutput);
     }
   } else {
     const presentTime = new Date().toString();
