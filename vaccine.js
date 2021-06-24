@@ -109,23 +109,20 @@ const parseDayData = (rawData) => {
         ? item.available_capacity_dose2 > 0
         : item.available_capacity_dose1 > 0)
   );
-  let output = "No | Name | Address | PINCODE | Capacity (Dose 2\n";
+  let output = "No | Name | Address | PINCODE | Fee |  Dose 1 | Dose 2\n";
   let htmlOutput = ` <html><body><table><thead><tr>
-    <th>No</th><th>Name</th><th>Address</th><th>Pin Code</th><th>Available</th>
+    <th>No</th><th>Name</th><th>Address</th><th>Pin Code</th><th>Fees</th><th>Dose 1</th><td>Dose 2</th>
     </tr></thead><tbody>`;
 
   vaccineSlots.forEach((item, index) => {
     output += `${index + 1} ${item.name} | ${item.address} | \
-      ${item.pincode} | `;
+      ${item.pincode} |  ${item.fee} | `;
     htmlOutput += `<tr><td>${index + 1}</td><td>${item.name}</td>
-    <td>${item.address}</td><td>${item.pincode}<td>`;
-    if (2 === +dosageType) {
-      output += `${item.available_capacity_dose2}\n`;
-      htmlOutput += `<td>${item.available_capacity_dose2}</td></tr>`;
-    } else {
-      output += `${item.available_capacity_dose1}\n`;
-      htmlOutput += `<td>${item.available_capacity_dose1}</td></tr>`;
-    }
+    <td>${item.address}</td><td>${item.pincode}<td><td>${item.fee}</td>`;
+    output += `${item.available_capacity_dose1} | `;
+    htmlOutput += `<td>${item.available_capacity_dose1}</td>`;
+    output += `${item.available_capacity_dose2}\n`;
+    htmlOutput += `<td>${item.available_capacity_dose2}</td></tr>`;
   });
   htmlOutput += `</tbody></table></body></html>`;
 
