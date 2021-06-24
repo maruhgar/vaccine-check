@@ -122,7 +122,7 @@ const parseDayData = (rawData) => {
     output += `${index + 1} ${item.name} | ${item.address} | \
       ${item.pincode} |  ${item.fee} | `;
     htmlOutput += `<tr><td>${index + 1}</td><td>${item.name}</td>
-    <td>${item.address}</td><td>${item.pincode}<td><td>${item.fee}</td>`;
+    <td>${item.address}</td><td>${item.pincode}</td><td>${item.fee}</td>`;
     output += `${item.available_capacity_dose1} | `;
     htmlOutput += `<td>${item.available_capacity_dose1}</td>`;
     output += `${item.available_capacity_dose2}\n`;
